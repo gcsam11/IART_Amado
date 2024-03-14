@@ -4,23 +4,28 @@ import random
 class gameLoop:
     def __init__(self, level):
         self.level = level
+        self.board = 3
         display_info = pygame.display.Info()
         self.screen = pygame.display.set_mode((display_info.current_w, display_info.current_h))
         self.colors = [(255, 255, 0), (0, 0, 255), (255, 0, 0)]  # RGB values for yellow, blue, and red colors
         self.color_dict = {(255, 255, 0):0, (0, 0, 255):1, (255, 0, 0):2}
-        self.game_board_start, self.game_board_solution = self.load_level(level)
-        self.running = True
         self.cursor_position = (0, 0)
+        self.game_board_start, self.game_board_solution = self.load_level(self.board)
+        self.running = True
+
+    def update_screen(self, screen):
+        self.screen = screen
 
     def generate_board(self, board):
         if board == 1:
             # 4x4 square board
             game_board_solution = [[random.choice(self.colors) for _ in range(4)] for _ in range(4)]
-            game_board_start = [[random.choice(self.colors) for _ in range(4)] for _ in range(4)]  # Different color for each square
+            game_board_start = [[random.choice(self.colors) for _ in range(4)] for _ in range(4)]
+
         elif board == 2:
             # 5x5 square without (1,3), (3,1), (5,3), (3,5) squares
             game_board_solution = [[random.choice(self.colors) for _ in range(5)] for _ in range(5)]
-            game_board_start = [[random.choice(self.colors) for _ in range(5)] for _ in range(5)]  # Different color for each square
+            game_board_start = [[random.choice(self.colors) for _ in range(5)] for _ in range(5)]
             game_board_start[0][2] = (0,0,0)
             game_board_start[2][0] = (0,0,0)
             game_board_start[4][2] = (0,0,0)
@@ -29,9 +34,31 @@ class gameLoop:
             game_board_solution[2][0] = (0,0,0)
             game_board_solution[4][2] = (0,0,0)
             game_board_solution[2][4] = (0,0,0)
-            pass
+
         elif board == 3:
-            pass
+            # 8x8 board without a few spots
+            game_board_solution = [[random.choice(self.colors) for _ in range(8)] for _ in range(8)]
+            game_board_start = [[random.choice(self.colors) for _ in range(8)] for _ in range(8)]
+
+            for i in range(0, 8):
+                for j in range(0, 8):
+                    if i == 0 and j in [0, 4, 5, 6, 7]:
+                        game_board_start[i][j], game_board_solution[i][j] = (0, 0, 0), (0, 0, 0)
+                    elif i == 1 and j in [3, 4, 5, 6, 7]:
+                        game_board_start[i][j], game_board_solution[i][j] = (0, 0, 0), (0, 0, 0)
+                    elif i == 2 and j in [6, 7]:
+                        game_board_start[i][j], game_board_solution[i][j] = (0, 0, 0), (0, 0, 0)
+                    elif i == 3 and j in [1, 3, 5, 6, 7]:
+                        game_board_start[i][j], game_board_solution[i][j] = (0, 0, 0), (0, 0, 0)
+                    elif i == 4 and j in [0, 1]:
+                        game_board_start[i][j], game_board_solution[i][j] = (0, 0, 0), (0, 0, 0)
+                    elif i == 5 and j in [0, 1, 3, 7]:
+                        game_board_start[i][j], game_board_solution[i][j] = (0, 0, 0), (0, 0, 0)
+                    elif i == 6 and j in [0, 1, 2, 3, 6, 7]:
+                        game_board_start[i][j], game_board_solution[i][j] = (0, 0, 0), (0, 0, 0)
+                    elif i == 7 and j in [0, 1, 2, 3, 5, 6, 7]:
+                        game_board_start[i][j], game_board_solution[i][j] = (0, 0, 0), (0, 0, 0)
+            self.cursor_position = (0, 1)
         elif board == 4:
             # 6x6 square board
             game_board_solution = [[random.choice(self.colors) for _ in range(6)] for _ in range(6)]
@@ -78,14 +105,17 @@ class gameLoop:
         # Update the game state here
         display_info = pygame.display.Info()
 
+        square_size = int(display_info.current_w * (5 / 100))
+        square_solution_size = int(display_info.current_w * (2.5 / 100))
+
         # Draw the game boards
-        self.draw_board(self.game_board_start, (50, 50), 50)
-        self.draw_board(self.game_board_solution, (display_info.current_w - 200, 50), 20)
+        self.draw_board(self.game_board_start, (50, 50), square_size)
+        self.draw_board(self.game_board_solution, (display_info.current_w - 250, square_solution_size), 20)
 
         # Debug print current board
         print("Current Board:")
         for row in self.game_board_start:
-            print(row)        
+            print(row) 
 
         pygame.display.flip()
 
