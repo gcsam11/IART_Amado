@@ -34,7 +34,7 @@ class gameLoop:
             game_board_solution[2][0] = (0,0,0)
             game_board_solution[4][2] = (0,0,0)
             game_board_solution[2][4] = (0,0,0)
-
+            
         elif board == 3:
             # 8x8 board without a few spots
             game_board_solution = [[random.choice(self.colors) for _ in range(8)] for _ in range(8)]
@@ -63,6 +63,23 @@ class gameLoop:
             # 6x6 square board
             game_board_solution = [[random.choice(self.colors) for _ in range(6)] for _ in range(6)]
             game_board_start = [[random.choice(self.colors) for _ in range(6)] for _ in range(6)]  # Different color for each square
+        elif board == 5:
+            # 8x8 razor board
+            game_board_solution = [[(0,0,0) for _ in range(8)] for _ in range(8)]
+            game_board_start = [[(0,0,0) for _ in range(8)] for _ in range(8)]
+            for i in range(8):
+                for j in range(8):
+                    if not ((i == 0 and j in [0, 1, 2, 3, 5, 6, 7]) or \
+                    (i == 1 and j in [0, 1, 2, 7]) or \
+                    (i == 2 and j in [0, 1, 5, 7]) or \
+                    (i == 3 and j in [0, 4]) or \
+                    (i == 4 and j in [3, 7]) or \
+                    (i == 5 and j in [0, 2, 6, 7]) or \
+                    (i == 6 and j in [0, 1, 5, 6, 7]) or \
+                    (i == 7 and j in [0, 1, 2, 4, 5, 6, 7])):
+                        game_board_start[i][j] = random.choice(self.colors)
+                        game_board_solution[i][j] = random.choice(self.colors)
+            self.cursor_position = (4,0)
         return game_board_start, game_board_solution
 
     def load_level(self, board):
@@ -111,11 +128,6 @@ class gameLoop:
         # Draw the game boards
         self.draw_board(self.game_board_start, (50, 50), square_size)
         self.draw_board(self.game_board_solution, (display_info.current_w - 250, square_solution_size), 20)
-
-        # Debug print current board
-        print("Current Board:")
-        for row in self.game_board_start:
-            print(row) 
 
         pygame.display.flip()
 
