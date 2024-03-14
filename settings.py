@@ -3,12 +3,15 @@ import pygame
 class SettingsMenu:
     def __init__(self, screen):
         self.screen = screen
-        self.font = pygame.font.Font(None, 36)
-        self.options = ["800x600", "1024x768", "1280x720", "1920x1080", "Back"]
-        self.back_font = pygame.font.Font(None, 72)
+        self.options = ["640x480", "800x600", "1024x768", "1280x960", "Back"]
         self.selected_option = 0
-        info = pygame.display.Info()  # Get current screen info
-        self.selected_resolution = f"{info.current_w}x{info.current_h}"  # Initialize selected_resolution with current resolution
+        self.info = pygame.display.Info()  # Get current screen info
+        self.selected_resolution = f"{self.info.current_w}x{self.info.current_h}"  # Initialize selected_resolution with current resolution
+        self.font = pygame.font.Font(None, self.screen.get_height() // 20)
+
+    def update_screen(self, screen):
+        self.screen = screen
+        self.font = pygame.font.Font(None, self.screen.get_height() // 20)  # Update the font size based on the new screen size
 
     def draw(self):
         for i, option in enumerate(self.options):
@@ -29,10 +32,6 @@ class SettingsMenu:
             elif event.key == pygame.K_DOWN:
                 self.selected_option = (self.selected_option + 1) % len(self.options)
             elif event.key == pygame.K_RETURN:
-                selected_option = self.options[self.selected_option]
-                if selected_option == "Back":
-                    return "Back"
-                else:
-                    width, height = map(int, selected_option.split('x'))
-                    self.screen = pygame.display.set_mode((width, height))
+                return self.options[self.selected_option]
+        return None
                     
