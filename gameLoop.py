@@ -8,7 +8,7 @@ class gameLoop:
         self.screen = pygame.display.set_mode((display_info.current_w, display_info.current_h))
         self.colors = [(255, 255, 0), (0, 0, 255), (255, 0, 0)]  # RGB values for yellow, blue, and red colors
         self.color_dict = {(255, 255, 0):0, (0, 0, 255):1, (255, 0, 0):2}
-        self.game_board_start, self.game_board_solution = self.load_level(1)
+        self.game_board_start, self.game_board_solution = self.load_level(level)
         self.running = True
         self.cursor_position = (0, 0)
 
@@ -19,6 +19,16 @@ class gameLoop:
             game_board_start = [[random.choice(self.colors) for _ in range(4)] for _ in range(4)]  # Different color for each square
         elif board == 2:
             # 5x5 square without (1,3), (3,1), (5,3), (3,5) squares
+            game_board_solution = [[random.choice(self.colors) for _ in range(5)] for _ in range(5)]
+            game_board_start = [[random.choice(self.colors) for _ in range(5)] for _ in range(5)]  # Different color for each square
+            game_board_start[0][2] = (0,0,0)
+            game_board_start[2][0] = (0,0,0)
+            game_board_start[4][2] = (0,0,0)
+            game_board_start[2][4] = (0,0,0)
+            game_board_solution[0][2] = (0,0,0)
+            game_board_solution[2][0] = (0,0,0)
+            game_board_solution[4][2] = (0,0,0)
+            game_board_solution[2][4] = (0,0,0)
             pass
         elif board == 3:
             pass
@@ -44,7 +54,7 @@ class gameLoop:
 
     def is_valid_position(self, position):
         x, y = position
-        if x < 0 or x >= len(self.game_board_start[0]) or y < 0 or y >= len(self.game_board_start):
+        if x < 0 or x >= len(self.game_board_start[0]) or y < 0 or y >= len(self.game_board_start) or self.game_board_start[y][x] == (0,0,0):
             return False
         return True
     
