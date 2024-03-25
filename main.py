@@ -54,19 +54,29 @@ def main():
                     break
                 if result == "Level 1":
                     current_menu = "gameLoop"
-                    game = gameLoop(1)  
+                    game = gameLoop(1, 1)  
                     break
                 elif result == "Level 2":
                     current_menu = "gameLoop"
-                    game = gameLoop(2) 
+                    game = gameLoop(2, 1) 
                     break
                 elif result == "Level 3":
                     current_menu = "gameLoop"
-                    game = gameLoop(3)
+                    game = gameLoop(3, 1)
                     break
             elif current_menu == "gameLoop":
                 if game is not None:
-                    if not game.update(events):
+                    # Check if the game board and the solution board are equal
+                    if game.game_board_start == game.game_board_solution:
+                        if game.board < game.totalBoards:
+                            # There is a next board, load it
+                            game = gameLoop(game.level, game.board + 1)
+                        else:
+                            # There is no next board, the game is finished
+                            print("Game finished!")
+                            game = None
+                            current_menu = "main"
+                    if game is not None and not game.update(events):
                         current_menu = "main"
 
         if current_menu == "main":
