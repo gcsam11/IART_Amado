@@ -2,9 +2,10 @@ import pygame
 import random
 
 class gameLoop:
-    def __init__(self, level):
+    def __init__(self, level, board):
         self.level = level
-        self.board = 3
+        self.totalBoards = 5
+        self.board = board
         display_info = pygame.display.Info()
         self.screen = pygame.display.set_mode((display_info.current_w, display_info.current_h))
         self.colors = [(255, 255, 0), (0, 0, 255), (255, 0, 0)]  # RGB values for yellow, blue, and red colors
@@ -139,6 +140,8 @@ class gameLoop:
 
         square_size = int(display_info.current_w * (5 / 100))
         square_solution_size = int(display_info.current_w * (2.5 / 100))
+
+        self.screen.fill((0, 0, 0))
 
         # Draw the game boards
         self.draw_board(self.game_board_start, (50, 50), square_size)
