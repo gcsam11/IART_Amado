@@ -29,13 +29,17 @@ class gameLoop:
         for _ in range(steps):
             direction = random.choice(["up", "down", "left", "right"])
             if direction == "up":
-                self.move_cursor((self.cursor_position[0], self.cursor_position[1]-1))
+                if (not self.move_cursor((self.cursor_position[0], self.cursor_position[1]-1))):
+                    steps+=1
             elif direction == "down":
-                self.move_cursor((self.cursor_position[0], self.cursor_position[1]+1))
+                if (not self.move_cursor((self.cursor_position[0], self.cursor_position[1]+1))):
+                    steps+=1
             elif direction == "left":
-                self.move_cursor((self.cursor_position[0]-1, self.cursor_position[1]))
+                if (not self.move_cursor((self.cursor_position[0]-1, self.cursor_position[1]))):
+                    steps+=1
             elif direction == "right":
-                self.move_cursor((self.cursor_position[0]+1, self.cursor_position[1]))
+                if (not self.move_cursor((self.cursor_position[0]+1, self.cursor_position[1]))):
+                    steps+=1
         self.cursor_position = original_cursor
 
     def update_screen(self, screen):
