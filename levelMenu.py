@@ -8,6 +8,7 @@ class LevelMenu:
         self.options = ["Level 1", "Level 2", "Level 3", "Back"]
         self.selected_option = 0
         self.title = "AMADO"
+        self.update_fonts()
 
     def draw(self):
         # Draw the title
@@ -21,8 +22,20 @@ class LevelMenu:
                 color = (255, 0, 0)  # Red color for selected option
             else:
                 color = (255, 255, 255)  # White color for other options
-            text = self.font.render(option, True, color)
+            text = self.option_font.render(option, True, color)
             self.screen.blit(text, (50, 150 + i * 50))  # Adjust the position to avoid overlapping with the title
+        
+    def update_screen(self, screen):
+        self.screen = screen
+        self.update_fonts()
+
+    def update_fonts(self):
+        # Adjust the font size based on the screen size
+        title_font_size = self.screen.get_height() // 10
+        option_font_size = self.screen.get_height() // 20
+
+        self.title_font = pygame.font.Font(None, title_font_size)
+        self.option_font = pygame.font.Font(None, option_font_size)
 
     def handle_input(self, event):
         if event.type == pygame.KEYDOWN:
