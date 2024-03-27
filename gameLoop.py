@@ -13,6 +13,9 @@ class gameLoop:
         self.cursor_position = (0, 0)
         self.game_board_start, self.game_board_solution = self.load_level(self.board)
         self.regression_algorithm(1)
+        pygame.time.set_timer(pygame.USEREVENT, 1000)
+        self.font = pygame.font.Font(None, 36)
+        self.timer, self.timer_text = 70, '70'.rjust(3)
         self.running = True
 
     def regression_algorithm(self, difficulty):
@@ -114,6 +117,7 @@ class gameLoop:
                 if (j,i)==self.cursor_position:
                     pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(x + j * square_size + offset*j - 7.5, y + i * square_size + offset*i - 7.5, square_size+15, square_size+15))
                 pygame.draw.rect(self.screen, color, pygame.Rect(offset*j + x + j * square_size, offset*i + y + i * square_size, square_size, square_size))
+        self.screen.blit(self.font.render(self.timer_text, True, (255, 255, 255)), (10, 10))
 
 
     def is_valid_position(self, position):
@@ -154,6 +158,9 @@ class gameLoop:
         pygame.display.flip()
 
         for event in events:
+            if event.type == pygame.USEREVENT:
+                self.timer -= 1
+                self.timer_text = str(self.timer).rjust(3) if self.timer > 0 else 'Time is up!'
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     # Handle up arrow key event
