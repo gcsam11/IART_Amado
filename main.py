@@ -13,7 +13,10 @@ def main():
     current_menu = "main"
     game = None
 
+    clock = pygame.time.Clock()
+
     while True:
+        dt = clock.tick(30)
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
