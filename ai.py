@@ -28,6 +28,9 @@ def copy(board):
         new_board.append(temp)
     return new_board
 
+def list_to_tuple(l):
+    return tuple([tuple(x) for x in l])
+
 
 class GameState:
     def __init__(self,cursor_position,board,goal_board,previous_move=START):
@@ -46,7 +49,7 @@ class GameState:
         return not self.__eq__(other)
     
     def __hash__(self):
-        return hash((self.b1, self.b2)) 
+        return hash((self.cursor_position, list_to_tuple(self.board)))
 
     def __str__(self):
         string = "(" + str(self.cursor_position[0]) + ", " + str(self.cursor_position[1]) + ")\n\n"
@@ -252,6 +255,42 @@ class TreeNode:
     
         return None
     
+    def depth_limited_search(initial_state, goal_state_func, operators_func, depth_limit):
+        # your code here
+        root = TreeNode(initial_state)
+        visited = set ([initial_state])
+
+        '''inner recursive function'''
+
+        def sub_dfs(node,depth):
+            if goal_state_func(node.state):
+                return node
+            if depth == depth_limit:
+                return None
+            
+            for state in operators_func(node.state):
+                if(state not in visited):
+                    visited.add(state)
+                    child_node = TreeNode(state=state,parent=node)
+                    node.add_child(child_node)
+                    goal = sub_dfs(child_node,depth+1)
+                    if(goal is not None):
+                        return goal
+            
+            return None
+    
+        return sub_dfs(root,0)
+
+    def iterative_deepening_search(initial_state, goal_state_func, operators_func, max_depth):
+        # your code here
+        for depth in range(max_depth):
+            print(depth)
+            result = TreeNode.depth_limited_search(initial_state,goal_state_func,operators_func,depth)
+            if result is not None:
+                return result
+        
+        return None
+
     
     def print_solution(node):
         # your code here
@@ -264,7 +303,14 @@ class TreeNode:
             path = reversed(path)
             for step in path:
                 print(move_string[step.state.previous_move])
+        
+        
         return
     
-goal = TreeNode.a_star_search(GameState((0,0),game_board_start,game_board_solution),GameState.goal_state,GameState.get_states,GameState.heuristic)
+goal = TreeNode.depth_limited_search(GameState((0,0),game_board_start,game_board_solution),GameState.goal_state,GameState.get_states,50)
+
 TreeNode.print_solution(goal)
+
+print(goal.state)
+
+print("Done")
