@@ -2,7 +2,7 @@ import pygame
 import random
 
 class gameLoop:
-    def __init__(self, level, board):
+    def __init__(self, level, board, remaining_time=0):
         self.level = level
         self.totalBoards = 5
         self.board = board
@@ -13,11 +13,12 @@ class gameLoop:
         self.cursor_position = (0, 0)
         self.game_board_start, self.game_board_solution = self.load_level(self.board)
         self.regression_algorithm(1)
-        pygame.time.set_timer(pygame.USEREVENT, 1000)
+        self.moved = False
         self.font = pygame.font.Font(None, 36)
-        self.timer, self.timer_text = 70, '70'.rjust(3)
+        self.timer = 180 if (70+remaining_time) > 180 else 70+remaining_time
+        self.timer_text = str(self.timer).rjust(3)
         self.running = True
-
+    
     def regression_algorithm(self, difficulty):
         if difficulty == 1:
             steps = 5*len(self.game_board_start)
@@ -142,7 +143,44 @@ class gameLoop:
         return True
 
 
-    def update(self, events):
+    def update(self, event):
+        if event.type == pygame.USEREVENT:
+            if self.moved == True:
+                self.timer -= 1
+                self.timer_text = str(self.timer).rjust(3) if self.timer > 0 else 'Time\'s up!'
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                # Handle up arrow key event
+                current_position = self.cursor_position
+                next_position = (current_position[0], current_position[1] - 1)
+                self.move_cursor(next_position)
+                if (not self.moved):
+                    pygame.time.set_timer(pygame.USEREVENT, 1000)
+                    self.moved = True
+            elif event.key == pygame.K_DOWN:
+                # Handle down arrow key event
+                current_position = self.cursor_position
+                next_position = (current_position[0], current_position[1] + 1)
+                self.move_cursor(next_position)
+                if (not self.moved):
+                    pygame.time.set_timer(pygame.USEREVENT, 1000)
+                    self.moved = True
+            elif event.key == pygame.K_LEFT:
+                # Handle left arrow key event
+                current_position = self.cursor_position
+                next_position = (current_position[0] - 1, current_position[1])
+                self.move_cursor(next_position)
+                if (not self.moved):
+                    pygame.time.set_timer(pygame.USEREVENT, 1000)
+                    self.moved = True
+            elif event.key == pygame.K_RIGHT:
+                # Handle right arrow key event
+                current_position = self.cursor_position
+                next_position = (current_position[0] + 1, current_position[1])
+                self.move_cursor(next_position)
+                if (not self.moved):
+                    pygame.time.set_timer(pygame.USEREVENT, 1000)
+                    self.moved = True
         # Update the game state here
         display_info = pygame.display.Info()
 
@@ -156,31 +194,4 @@ class gameLoop:
         self.draw_board(self.game_board_solution, (display_info.current_w - 250, square_solution_size), 20)
 
         pygame.display.flip()
-
-        for event in events:
-            if event.type == pygame.USEREVENT:
-                self.timer -= 1
-                self.timer_text = str(self.timer).rjust(3) if self.timer > 0 else 'Time is up!'
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    # Handle up arrow key event
-                    current_position = self.cursor_position
-                    next_position = (current_position[0], current_position[1] - 1)
-                    self.move_cursor(next_position)
-                elif event.key == pygame.K_DOWN:
-                    # Handle down arrow key event
-                    current_position = self.cursor_position
-                    next_position = (current_position[0], current_position[1] + 1)
-                    self.move_cursor(next_position)
-                elif event.key == pygame.K_LEFT:
-                    # Handle left arrow key event
-                    current_position = self.cursor_position
-                    next_position = (current_position[0] - 1, current_position[1])
-                    self.move_cursor(next_position)
-                elif event.key == pygame.K_RIGHT:
-                    # Handle right arrow key event
-                    current_position = self.cursor_position
-                    next_position = (current_position[0] + 1, current_position[1])
-                    self.move_cursor(next_position)
-
         return True

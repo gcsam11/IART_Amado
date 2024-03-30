@@ -16,7 +16,7 @@ def main():
     clock = pygame.time.Clock()
 
     while True:
-        dt = clock.tick(30)
+        clock.tick(60)
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
@@ -69,18 +69,22 @@ def main():
                     break
             elif current_menu == "gameLoop":
                 if game is not None:
+                    if not game.update(event):
+                        current_menu = "main"
                     # Check if the game board and the solution board are equal
                     if game.game_board_start == game.game_board_solution:
                         if game.board < game.totalBoards:
                             # There is a next board, load it
-                            game = gameLoop(game.level, game.board + 1)
+                            pygame.time.delay(4000)
+                            newgame = gameLoop(game.level, game.board + 1, game.timer)
+                            game = None
+                            game = newgame
+                            events = []
                         else:
                             # There is no next board, the game is finished
                             print("Game finished!")
                             game = None
                             current_menu = "main"
-                    if game is not None and not game.update(events):
-                        current_menu = "main"
 
         if current_menu == "main":
             menu.draw()
