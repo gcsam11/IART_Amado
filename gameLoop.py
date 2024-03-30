@@ -2,7 +2,7 @@ import pygame
 import random
 
 class gameLoop:
-    def __init__(self, level, board, remaining_time=0):
+    def __init__(self, level, board, remaining_time=0, lives=3):
         self.level = level
         self.totalBoards = 5
         self.board = board
@@ -17,6 +17,7 @@ class gameLoop:
         self.font = pygame.font.Font(None, 36)
         self.timer = 180 if (70+remaining_time) > 180 else 70+remaining_time
         self.timer_text = str(self.timer).rjust(3)
+        self.lives = lives
         self.running = True
     
     def regression_algorithm(self, difficulty):
@@ -194,4 +195,7 @@ class gameLoop:
         self.draw_board(self.game_board_solution, (display_info.current_w - 250, square_solution_size), 20)
 
         pygame.display.flip()
+
+        if self.timer <= 0:
+            return False
         return True

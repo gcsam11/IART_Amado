@@ -70,7 +70,15 @@ def main():
             elif current_menu == "gameLoop":
                 if game is not None:
                     if not game.update(event):
-                        current_menu = "main"
+                        pygame.time.delay(5000)
+                        if game.lives-1 <= 0:
+                            game = None
+                            current_menu = "main"
+                        else:
+                            newgame = gameLoop(game.level, game.board, game.timer, game.lives-1)
+                            game = None
+                            game = newgame
+                            events = []
                     # Check if the game board and the solution board are equal
                     if game.game_board_start == game.game_board_solution:
                         if game.board < game.totalBoards:
