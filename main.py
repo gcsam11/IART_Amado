@@ -71,14 +71,14 @@ def main():
                 if game is not None:
                     if not game.update(event):
                         pygame.time.delay(5000)
-                        if game.lives-1 <= 0:
+                        if game.lives <= 0:
                             game = None
                             current_menu = "main"
                         else:
-                            newgame = gameLoop(game.level, game.board, game.timer, game.lives-1)
+                            newgame = gameLoop(game.level, game.board, 0, game.lives)
                             game = None
                             game = newgame
-                            events = []
+                            pygame.event.clear()
                     # Check if the game board and the solution board are equal
                     if game.game_board_start == game.game_board_solution:
                         if game.board < game.totalBoards:
@@ -87,7 +87,7 @@ def main():
                             newgame = gameLoop(game.level, game.board + 1, game.timer)
                             game = None
                             game = newgame
-                            events = []
+                            pygame.event.clear()
                         else:
                             # There is no next board, the game is finished
                             print("Game finished!")

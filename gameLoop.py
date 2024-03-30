@@ -12,7 +12,7 @@ class gameLoop:
         self.color_dict = {(255, 255, 0):0, (0, 0, 255):1, (255, 0, 0):2}
         self.cursor_position = (0, 0)
         self.game_board_start, self.game_board_solution = self.load_level(self.board)
-        self.regression_algorithm(1)
+        self.regression_algorithm(level)
         self.moved = False
         self.font = pygame.font.Font(None, 36)
         self.timer = 180 if (70+remaining_time) > 180 else 70+remaining_time
@@ -120,6 +120,7 @@ class gameLoop:
                     pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(x + j * square_size + offset*j - 7.5, y + i * square_size + offset*i - 7.5, square_size+15, square_size+15))
                 pygame.draw.rect(self.screen, color, pygame.Rect(offset*j + x + j * square_size, offset*i + y + i * square_size, square_size, square_size))
         self.screen.blit(self.font.render(self.timer_text, True, (255, 255, 255)), (10, 10))
+        self.screen.blit(self.font.render(str(self.lives), True, (255, 255, 255)), (100, 10))
 
 
     def is_valid_position(self, position):
@@ -148,7 +149,14 @@ class gameLoop:
         if event.type == pygame.USEREVENT:
             if self.moved == True:
                 self.timer -= 1
-                self.timer_text = str(self.timer).rjust(3) if self.timer > 0 else 'Time\'s up!'
+                if self.timer > 0:
+                    self.timer_text = str(self.timer).rjust(3)
+                elif self.lives == 1:
+                    self.timer_text = 'Game Over!'
+                    self.lives -= 1
+                else:
+                    self.timer_text = 'Time\'s up!'
+                    self.lives -= 1
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 # Handle up arrow key event
