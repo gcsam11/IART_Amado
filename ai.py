@@ -66,6 +66,11 @@ class GameState:
     
     ###SMOOTH OPERATORS
 
+    def valid_move(pos,board):
+        if(pos[0] < 0 or pos[0] >= len(board[0]) or pos[1] < 0 or pos[1] >= len(board)):
+            return False
+        return board[pos[1]][pos[0]] != (0,0,0)
+
     def color_update(pos,next_pos,board):
         b = copy(board)
         first_color = board[pos[1]][pos[0]]
@@ -78,34 +83,34 @@ class GameState:
             return b
 
     def up(state):
-        if(state.cursor_position[1] <= 0):
+        new_cursor = (state.cursor_position[0],state.cursor_position[1]-1)
+        if(not GameState.valid_move(new_cursor,state.board)):
             return state
         else:
-            new_cursor = (state.cursor_position[0],state.cursor_position[1]-1)
             new_board = GameState.color_update(state.cursor_position,new_cursor,state.board)
             return GameState(new_cursor,new_board,state.goal_board,UP)
         
     def down(state):
-        if(state.cursor_position[1] >= len(state.board) - 1):
+        new_cursor = (state.cursor_position[0],state.cursor_position[1]+1)
+        if(not GameState.valid_move(new_cursor,state.board)):
             return state
         else:
-            new_cursor = (state.cursor_position[0],state.cursor_position[1]+1)
             new_board = GameState.color_update(state.cursor_position,new_cursor,state.board)
             return GameState(new_cursor,new_board,state.goal_board,DOWN)
     
     def left(state):
-        if(state.cursor_position[0] <= 0):
+        new_cursor = (state.cursor_position[0]-1,state.cursor_position[1])
+        if(not GameState.valid_move(new_cursor,state.board)):
             return state
         else:
-            new_cursor = (state.cursor_position[0]-1,state.cursor_position[1])
             new_board = GameState.color_update(state.cursor_position,new_cursor,state.board)
             return GameState(new_cursor,new_board,state.goal_board,LEFT)
     
     def right(state):
-        if(state.cursor_position[0] >= len(state.board[0]) - 1):
+        new_cursor = (state.cursor_position[0]+1,state.cursor_position[1])
+        if(not GameState.valid_move(new_cursor,state.board)):
             return state
         else:
-            new_cursor = (state.cursor_position[0]+1,state.cursor_position[1])
             new_board = GameState.color_update(state.cursor_position,new_cursor,state.board)
             return GameState(new_cursor,new_board,state.goal_board,RIGHT)
         
@@ -171,9 +176,9 @@ class TreeNode:
     def breadth_first_search(initial_state, goal_state_func, operators_func):
         root = TreeNode(initial_state)   # create the root node in the search tree
         queue = deque([root])   # initialize the queue to store the nodes
-        
         while queue:
             node = queue.popleft()
+            print("Depth: ", node.depth)
             if goal_state_func(node.state):
                 return node
             else:
@@ -307,8 +312,7 @@ class TreeNode:
         
         return
     
-goal = TreeNode.depth_limited_search(GameState((0,0),game_board_start,game_board_solution),GameState.goal_state,GameState.get_states,50)
-
+goal = TreeNode.breadth_first_search(GameState((0,0),game_board_start,game_board_solution),GameState.goal_state,GameState.get_states)
 TreeNode.print_solution(goal)
 
 print(goal.state)
