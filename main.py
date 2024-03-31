@@ -13,6 +13,9 @@ def main():
     current_menu = "main"
     game = None
 
+    win = pygame.mixer.Sound("sounds/win.mp3")
+    lose = pygame.mixer.Sound("sounds/gameover.mp3")
+
     clock = pygame.time.Clock()
 
     while True:
@@ -70,6 +73,7 @@ def main():
             elif current_menu == "gameLoop":
                 if game is not None:
                     if not game.update(event):
+                        lose.play()
                         pygame.time.delay(5000)
                         if game.lives <= 0:
                             game = None
@@ -81,9 +85,10 @@ def main():
                             pygame.event.clear()
                     # Check if the game board and the solution board are equal
                     if game.game_board_start == game.game_board_solution:
+                        win.play()
+                        pygame.time.delay(4000)
                         if game.board < game.totalBoards:
                             # There is a next board, load it
-                            pygame.time.delay(4000)
                             newgame = gameLoop(game.level, game.board + 1, game.timer)
                             game = None
                             game = newgame
