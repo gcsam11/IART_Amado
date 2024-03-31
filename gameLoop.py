@@ -222,7 +222,7 @@ class gameLoop:
         self.draw_board(self.game_board_start, (game_board_x, game_board_y), square_size)
 
         # Draw the solution board
-        self.draw_board(self.game_board_solution, (display_info.current_w - (len(self.game_board_solution[0]) * square_solution_size) - 75, 50), square_solution_size)
+        self.draw_board(self.game_board_solution, (display_info.current_w - (len(self.game_board_solution[0]) * square_solution_size) - 75, 10), square_solution_size)
         self.screen.blit(self.font.render("Move Count: " + str(self.move_count), True, (255, 255, 255)), (10, 10))
         self.screen.blit(self.font.render("Lives: " + str(self.lives), True, (255, 255, 255)), (250, 10))
         bar_width = 50
@@ -232,10 +232,10 @@ class gameLoop:
         if self.timer % 5 == 0:
             self.timer_text_update = self.font.render(str(self.timer), True, (255, 255, 255))
 
-        self.screen.blit(self.timer_text_update, (display_info.current_w - self.timer_text_update.get_width() - 10, display_info.current_h - self.timer_text_update.get_height() - 10))        
+        self.screen.blit(self.timer_text_update, (display_info.current_w - (len(self.game_board_solution[0]) * square_solution_size) - 50 + (10 + bar_width), display_info.current_h - self.timer_text_update.get_height() - 10))        
 
         for i in range(min(num_bars, 19)):
-            pygame.draw.rect(self.screen, (255, 0, 0), pygame.Rect(display_info.current_w - (10 + bar_width) - self.timer_text_update.get_width() - 10, display_info.current_h - (10 + (i+1) * (bar_height + 5)), bar_width, bar_height))
+            pygame.draw.rect(self.screen, (255, 0, 0), pygame.Rect(display_info.current_w - (len(self.game_board_solution[0]) * square_solution_size) - 120 + (10 + bar_width), display_info.current_h - (10 + (i+1) * (bar_height + 5)), bar_width, bar_height))
 
         pygame.display.flip()
     
