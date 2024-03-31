@@ -5,7 +5,7 @@ class LevelMenu:
         self.screen = screen
         self.font = pygame.font.Font(None, 36)
         self.title_font = pygame.font.Font(None, 72)  # Larger font for the title
-        self.options = ["Level 1", "Level 2", "Level 3", "Back"]
+        self.options = ["Difficulty LVL 1", "Difficulty LVL 2", "Difficulty LVL 3", "Back"]
         self.selected_option = 0
         self.title = "AMADO"
         self.update_fonts()
@@ -44,8 +44,4 @@ class LevelMenu:
             elif event.key == pygame.K_DOWN:
                 self.selected_option = (self.selected_option + 1) % len(self.options)
             elif event.key == pygame.K_RETURN:
-                selected_option = self.options[self.selected_option]
-                if selected_option == "Back":
-                    return "Back"
-                else:
-                    return self.options[self.selected_option]
+                return self.selected_option
