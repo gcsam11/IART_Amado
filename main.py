@@ -13,10 +13,13 @@ def main():
     current_menu = "main"
     game = None
 
+    win = pygame.mixer.Sound("sounds/win.mp3")
+    lose = pygame.mixer.Sound("sounds/gameover.mp3")
+
     clock = pygame.time.Clock()
 
     while True:
-        dt = clock.tick(30)
+        clock.tick(60)
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
@@ -69,18 +72,32 @@ def main():
                     break
             elif current_menu == "gameLoop":
                 if game is not None:
+                    if not game.update(event):
+                        lose.play()
+                        pygame.time.delay(5000)
+                        if game.lives <= 0:
+                            game = None
+                            current_menu = "main"
+                        else:
+                            newgame = gameLoop(game.level, game.board, 0, game.lives)
+                            game = None
+                            game = newgame
+                            pygame.event.clear()
                     # Check if the game board and the solution board are equal
                     if game.board_is_solved():
+                        win.play()
+                        pygame.time.delay(4000)
                         if game.board < game.totalBoards:
                             # There is a next board, load it
-                            game = gameLoop(game.level, game.board + 1)
+                            newgame = gameLoop(game.level, game.board + 1, game.timer)
+                            game = None
+                            game = newgame
+                            pygame.event.clear()
                         else:
                             # There is no next board, the game is finished
                             print("Game finished!")
                             game = None
                             current_menu = "main"
-                    if game is not None and not game.update(events):
-                        current_menu = "main"
 
         if current_menu == "main":
             menu.draw()
