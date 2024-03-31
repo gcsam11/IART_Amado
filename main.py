@@ -70,7 +70,7 @@ def main():
             elif current_menu == "gameLoop":
                 if game is not None:
                     # Check if the game board and the solution board are equal
-                    if game.game_board_start == game.game_board_solution:
+                    if game.board_is_solved():
                         if game.board < game.totalBoards:
                             # There is a next board, load it
                             game = gameLoop(game.level, game.board + 1)
