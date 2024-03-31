@@ -1,8 +1,6 @@
 import random
 from collections import deque
 
-import gameLoop
-
 UP = 1
 DOWN = 2
 LEFT = 3
@@ -471,7 +469,6 @@ class TreeNode:
             while node:
                 path.append(node)
                 node = node.parent
-            path = reversed(path)
             return path
         return None
     
@@ -485,10 +482,10 @@ class TreeNode:
         return None
 """
     
-state = GameState(cursor_position,game_board_start,game_board_solution)
+#state = GameState(cursor_position,game_board_start,game_board_solution)
 
-goal = TreeNode.a_star_search(state,GameState.goal_state,GameState.get_states,GameState.simple_heuristic)
+#goal = TreeNode.a_star_search(state,GameState.goal_state,GameState.get_states,GameState.simple_heuristic)
 
-TreeNode.print_solution(goal)
+#TreeNode.print_solution(goal)
 
-print("Done")
+#print("Done")

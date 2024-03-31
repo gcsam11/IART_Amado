@@ -84,7 +84,7 @@ def main():
                         pygame.time.delay(4000)
                         if game.board < game.totalBoards:
                             # There is a next board, load it
-                            newgame = gameLoop(game.level, game.board + 1, game.timer)
+                            newgame = gameLoop(game.level, game.board + 1, game.timer, game.lives)
                             game = None
                             game = newgame
                             pygame.event.clear()
