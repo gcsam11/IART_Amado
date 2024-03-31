@@ -207,3 +207,7 @@ class gameLoop:
         if self.timer <= 0:
             return False
         return True
+    
+    def ai_move(self, movelist):
+        for move in movelist:
+            self.move_cursor(move)

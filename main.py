@@ -55,29 +55,24 @@ def main():
                         game.update_screen(screen)
             elif current_menu == "levelselection":
                 result = levelMenu.handle_input(event)
-                if result == "Back":
+                if result == len(levelMenu.options)-1:
                     current_menu = "main"
                     break
-                if result == "Level 1":
+                elif result != None:
                     current_menu = "gameLoop"
-                    game = gameLoop(1, 1)  
-                    break
-                elif result == "Level 2":
-                    current_menu = "gameLoop"
-                    game = gameLoop(2, 1) 
-                    break
-                elif result == "Level 3":
-                    current_menu = "gameLoop"
-                    game = gameLoop(3, 1)
+                    game = gameLoop(result+1, 1)  
                     break
             elif current_menu == "gameLoop":
                 if game is not None:
+                    # Game has been lost
                     if not game.update(event):
                         lose.play()
                         pygame.time.delay(5000)
+                        # Out of lives, back to main menu
                         if game.lives <= 0:
                             game = None
                             current_menu = "main"
+                        # Restart the current board with one less life
                         else:
                             newgame = gameLoop(game.level, game.board, 0, game.lives)
                             game = None
