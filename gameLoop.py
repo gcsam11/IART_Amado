@@ -5,6 +5,7 @@ class gameLoop:
     def __init__(self, level, board, remaining_time=0, lives=3):
         self.level = level
         self.totalBoards = 5
+        self.move_count = 0
         self.board = board
         display_info = pygame.display.Info()
         self.screen = pygame.display.set_mode((display_info.current_w, display_info.current_h))
@@ -17,6 +18,7 @@ class gameLoop:
         self.font = pygame.font.Font(None, 36)
         self.timer = 180 if (70+remaining_time) > 180 else 70+remaining_time
         self.timer_text = str(self.timer).rjust(3)
+        self.timer_text_update = self.font.render(self.timer_text, True, (255, 255, 255))
         self.lives = lives
         self.running = True
     
@@ -119,9 +121,6 @@ class gameLoop:
                 if (j,i)==self.cursor_position:
                     pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(x + j * square_size + offset*j - 7.5, y + i * square_size + offset*i - 7.5, square_size+15, square_size+15))
                 pygame.draw.rect(self.screen, color, pygame.Rect(offset*j + x + j * square_size, offset*i + y + i * square_size, square_size, square_size))
-        self.screen.blit(self.font.render(self.timer_text, True, (255, 255, 255)), (10, 10))
-        self.screen.blit(self.font.render(str(self.lives), True, (255, 255, 255)), (100, 10))
-
 
     def is_valid_position(self, position):
         x, y = position
@@ -143,7 +142,9 @@ class gameLoop:
             final_color = self.colors[remaining_color_num]
             self.game_board_start[next_y][next_x]=final_color
         return True
-
+    
+    def board_is_solved(self):
+        return self.game_board_start == self.game_board_solution
 
     def update(self, event):
         if event.type == pygame.USEREVENT:
@@ -159,6 +160,7 @@ class gameLoop:
                     self.lives -= 1
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
+                self.move_count += 1
                 # Handle up arrow key event
                 current_position = self.cursor_position
                 next_position = (current_position[0], current_position[1] - 1)
@@ -167,6 +169,7 @@ class gameLoop:
                     pygame.time.set_timer(pygame.USEREVENT, 1000)
                     self.moved = True
             elif event.key == pygame.K_DOWN:
+                self.move_count += 1
                 # Handle down arrow key event
                 current_position = self.cursor_position
                 next_position = (current_position[0], current_position[1] + 1)
@@ -175,6 +178,7 @@ class gameLoop:
                     pygame.time.set_timer(pygame.USEREVENT, 1000)
                     self.moved = True
             elif event.key == pygame.K_LEFT:
+                self.move_count += 1
                 # Handle left arrow key event
                 current_position = self.cursor_position
                 next_position = (current_position[0] - 1, current_position[1])
@@ -183,6 +187,7 @@ class gameLoop:
                     pygame.time.set_timer(pygame.USEREVENT, 1000)
                     self.moved = True
             elif event.key == pygame.K_RIGHT:
+                self.move_count += 1
                 # Handle right arrow key event
                 current_position = self.cursor_position
                 next_position = (current_position[0] + 1, current_position[1])
@@ -190,6 +195,14 @@ class gameLoop:
                 if (not self.moved):
                     pygame.time.set_timer(pygame.USEREVENT, 1000)
                     self.moved = True
+
+        self.draw_aux()
+
+        if self.timer <= 0:
+            return False
+        return True
+    
+    def draw_aux(self):
         # Update the game state here
         display_info = pygame.display.Info()
 
@@ -198,15 +211,33 @@ class gameLoop:
 
         self.screen.fill((0, 0, 0))
 
-        # Draw the game boards
-        self.draw_board(self.game_board_start, (50, 50), square_size)
-        self.draw_board(self.game_board_solution, (display_info.current_w - 250, square_solution_size), 20)
+        # Draw a line that separates the solution from the board
+        pygame.draw.line(self.screen, (255, 0, 0), (display_info.current_w - (len(self.game_board_solution[0]) * square_solution_size) - 100, 10), (display_info.current_w - (len(self.game_board_solution[0]) * square_solution_size) - 100, display_info.current_h - 10), 5)
+
+        # Calculate the coordinates for the game board based on the screen width and height
+        game_board_x = (display_info.current_w - (len(self.game_board_solution[0]) * square_solution_size) - 100 - (len(self.game_board_start[0]) * square_size)) / 2
+        game_board_y = display_info.current_h / 2 - (square_size * len(self.game_board_start) / 2)
+
+        # Draw the game board with the calculated coordinates
+        self.draw_board(self.game_board_start, (game_board_x, game_board_y), square_size)
+
+        # Draw the solution board
+        self.draw_board(self.game_board_solution, (display_info.current_w - (len(self.game_board_solution[0]) * square_solution_size) - 75, 50), square_solution_size)
+        self.screen.blit(self.font.render("Move Count: " + str(self.move_count), True, (255, 255, 255)), (10, 10))
+        self.screen.blit(self.font.render("Lives: " + str(self.lives), True, (255, 255, 255)), (250, 10))
+        bar_width = 50
+        bar_height = 10
+        num_bars = self.timer // 5
+
+        if self.timer % 5 == 0:
+            self.timer_text_update = self.font.render(str(self.timer), True, (255, 255, 255))
+
+        self.screen.blit(self.timer_text_update, (display_info.current_w - self.timer_text_update.get_width() - 10, display_info.current_h - self.timer_text_update.get_height() - 10))        
+
+        for i in range(min(num_bars, 19)):
+            pygame.draw.rect(self.screen, (255, 0, 0), pygame.Rect(display_info.current_w - (10 + bar_width) - self.timer_text_update.get_width() - 10, display_info.current_h - (10 + (i+1) * (bar_height + 5)), bar_width, bar_height))
 
         pygame.display.flip()
-
-        if self.timer <= 0:
-            return False
-        return True
     
     def ai_move(self, movelist):
         for move in movelist:

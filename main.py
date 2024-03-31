@@ -79,7 +79,7 @@ def main():
                             game = newgame
                             pygame.event.clear()
                     # Check if the game board and the solution board are equal
-                    if game.game_board_start == game.game_board_solution:
+                    if game.board_is_solved():
                         win.play()
                         pygame.time.delay(4000)
                         if game.board < game.totalBoards:
