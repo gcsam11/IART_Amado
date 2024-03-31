@@ -238,3 +238,7 @@ class gameLoop:
             pygame.draw.rect(self.screen, (255, 0, 0), pygame.Rect(display_info.current_w - (10 + bar_width) - self.timer_text_update.get_width() - 10, display_info.current_h - (10 + (i+1) * (bar_height + 5)), bar_width, bar_height))
 
         pygame.display.flip()
+    
+    def ai_move(self, movelist):
+        for move in movelist:
+            self.move_cursor(move)
