@@ -1,6 +1,8 @@
 import random
 from collections import deque
 
+import gameLoop
+
 UP = 1
 DOWN = 2
 LEFT = 3
@@ -18,8 +20,116 @@ move_string = ["START", "UP", "DOWN", "LEFT", "RIGHT"]
 colors = [(255, 255, 0), (0, 0, 255), (255, 0, 0)]
 colors_dic={(255, 255, 0):0, (0, 0, 255):1, (255, 0, 0):2}
 
-game_board_start = [[red,yellow,blue,red],[blue,blue,yellow,red],[yellow,yellow,blue,yellow],[blue,yellow,yellow,red]]  # Different color for each square
-game_board_solution = [[blue,red,red,yellow],[yellow,red,blue,red],[yellow,red,red,yellow],[red,yellow,red,red]]
+def move_cursor(game_board_start, cursor_position, next_position):
+        x,y = cursor_position
+        next_x, next_y = next_position
+        if(next_position[0] >= 0 and next_position[0] < len(game_board_start[0]) and next_position[1] >= 0 and next_position[1] < len(game_board_start)):
+            if(game_board_start[next_position[1]][next_position[0]] != (0,0,0)):
+                cursor_position = next_position
+            else:
+                return False, cursor_position
+        else: 
+            return False, cursor_position
+        if game_board_start[next_y][next_x] != game_board_start[y][x]:
+            first_color_num = colors_dic[game_board_start[y][x]]
+            second_color_num = colors_dic[game_board_start[next_y][next_x]]
+            remaining_color_num = 3 - first_color_num - second_color_num
+            final_color = colors[remaining_color_num]
+            game_board_start[next_y][next_x]=final_color
+        return True, cursor_position
+
+def regression_algorithm(cursor_position,game_board_start, difficulty):
+        if difficulty == 1:
+            steps = 5*len(game_board_start)
+        elif difficulty == 2:
+            steps = 10*len(game_board_start)
+        elif difficulty == 3:
+            steps = 20*len(game_board_start)
+        original_cursor = cursor_position
+        row = random.randint(0, len(game_board_start)-1)
+        valid_list = [x for x in range(len(game_board_start[row])) if game_board_start[row][x] != (0,0,0)]
+        col = random.choice(valid_list)
+        cursor_position = (col, row)
+        for _ in range(steps):
+            direction = random.choice(move_string[1:])
+            if direction == "UP":
+                cond, cursor_position = move_cursor(game_board_start, cursor_position, (cursor_position[0], cursor_position[1]-1))
+                if (not cond):
+                    steps+=1
+            elif direction == "DOWN":
+                cond, cursor_position = move_cursor(game_board_start, cursor_position, (cursor_position[0], cursor_position[1]+1))
+                if (not cond):
+                    steps+=1
+            elif direction == "LEFT":
+                cond, cursor_position = move_cursor(game_board_start, cursor_position, (cursor_position[0]-1, cursor_position[1]))
+                if (not cond):
+                    steps+=1
+            elif direction == "RIGHT":
+                cond, cursor_position = move_cursor(game_board_start, cursor_position, (cursor_position[0]+1, cursor_position[1]))
+                if (not cond):
+                    steps+=1
+        cursor_position = original_cursor
+        return game_board_start
+
+def generate_board(board, cursor_position=(0,0)):
+        if board == 1:
+            # 4x4 square board
+            game_board_solution = [[random.choice(colors) for _ in range(4)] for _ in range(4)]
+        elif board == 2:
+            # 5x5 square without (1,3), (3,1), (5,3), (3,5) squares
+            game_board_solution = [[random.choice(colors) for _ in range(5)] for _ in range(5)]
+            game_board_solution[0][2] = (0,0,0)
+            game_board_solution[2][0] = (0,0,0)
+            game_board_solution[4][2] = (0,0,0)
+            game_board_solution[2][4] = (0,0,0)
+        elif board == 3:
+            # 8x8 board without a few spots
+            game_board_solution = [[random.choice(colors) for _ in range(8)] for _ in range(8)]
+            for i in range(0, 8):
+                for j in range(0, 8):
+                    if i == 0 and j in [0, 4, 5, 6, 7]:
+                        game_board_solution[i][j] = (0, 0, 0)
+                    elif i == 1 and j in [3, 4, 5, 6, 7]:
+                        game_board_solution[i][j] = (0, 0, 0)
+                    elif i == 2 and j in [6, 7]:
+                        game_board_solution[i][j] = (0, 0, 0)
+                    elif i == 3 and j in [1, 3, 5, 6, 7]:
+                        game_board_solution[i][j] = (0, 0, 0)
+                    elif i == 4 and j in [0, 1]:
+                        game_board_solution[i][j] = (0, 0, 0)
+                    elif i == 5 and j in [0, 1, 3, 7]:
+                        game_board_solution[i][j] = (0, 0, 0)
+                    elif i == 6 and j in [0, 1, 2, 3, 6, 7]:
+                        game_board_solution[i][j] = (0, 0, 0)
+                    elif i == 7 and j in [0, 1, 2, 3, 5, 6, 7]:
+                        game_board_solution[i][j] = (0, 0, 0)
+            cursor_position = (0, 1)
+        elif board == 4:
+            # 6x6 square board
+            game_board_solution = [[random.choice(colors) for _ in range(6)] for _ in range(6)]
+        elif board == 5:
+            # 8x8 razor board
+            game_board_solution = [[(0,0,0) for _ in range(8)] for _ in range(8)]
+            for i in range(8):
+                for j in range(8):
+                    if not ((i == 0 and j in [0, 1, 2, 3, 5, 6, 7]) or \
+                    (i == 1 and j in [0, 1, 2, 7]) or \
+                    (i == 2 and j in [0, 1, 5, 7]) or \
+                    (i == 3 and j in [0, 4]) or \
+                    (i == 4 and j in [3, 7]) or \
+                    (i == 5 and j in [0, 2, 6, 7]) or \
+                    (i == 6 and j in [0, 1, 5, 6, 7]) or \
+                    (i == 7 and j in [0, 1, 2, 4, 5, 6, 7])):
+                        game_board_solution[i][j] = random.choice(colors)
+            cursor_position = (4,0)
+        game_board_start = []
+        for list in game_board_solution:
+            game_board_start.append(list.copy())
+        return game_board_start, game_board_solution, cursor_position
+
+game_board_start, game_board_solution, cursor_position = generate_board(1)
+
+game_board_start = regression_algorithm(cursor_position,game_board_start, 1)
 
 def copy(board):
     new_board = []
@@ -145,7 +255,7 @@ class GameState:
             
         return g
     
-    def heuristic(state):
+    def simple_heuristic(state):
         board = state.board
         goal_board = state.goal_board
         distance = 0
@@ -155,7 +265,40 @@ class GameState:
                 if(board[i][j] != goal_board[i][j]):
                     distance += 1
         return distance
-        
+    
+    def color_clusters_heuristic(state):
+        board = state.board
+        goal = state.goal_board
+    # Helper function to find connected components (clusters) using DFS
+        def dfs(x, y, color):
+            if not (0 <= x < 4 and 0 <= y < 4) or visited[x][y] or board[x][y] != color:
+                return
+            visited[x][y] = True
+            for dx, dy in moves:
+                dfs(x + dx, y + dy, color)
+
+        moves = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        visited = [[False] * 4 for _ in range(4)]
+        clusters = 0
+
+        # Count clusters in the current state
+        for i in range(4):
+            for j in range(4):
+                if not visited[i][j]:
+                    dfs(i, j, board[i][j])
+                    clusters += 1
+
+        # Count clusters in the goal state
+        visited = [[False] * 4 for _ in range(4)]
+        goal_clusters = 0
+        for i in range(4):
+            for j in range(4):
+                if not visited[i][j]:
+                    dfs(i, j, goal[i][j])
+                    goal_clusters += 1
+
+        # Calculate the difference in cluster counts between the current state and the goal state
+        return abs(clusters - goal_clusters)
         
 # A generic definition of a tree node holding a state of the problem
 class TreeNode:
@@ -295,8 +438,19 @@ class TreeNode:
                 return result
         
         return None
-
     
+    def sub_depth_limited_search(node, goal_state_func, operators_func, depth_limit):
+        if goal_state_func(node.state):
+            return node
+        if node.depth == depth_limit:
+            return None
+        for state in operators_func(node.state):
+            child_node = TreeNode(state=state, parent=node)
+            result = TreeNode.sub_depth_limited_search(child_node, goal_state_func, operators_func, depth_limit)
+            if result is not None:
+                return result
+        return None
+
     def print_solution(node):
         # your code here
         if node:
@@ -308,13 +462,33 @@ class TreeNode:
             path = reversed(path)
             for step in path:
                 print(move_string[step.state.previous_move])
-        
-        
+                
         return
     
-goal = TreeNode.breadth_first_search(GameState((0,0),game_board_start,game_board_solution),GameState.goal_state,GameState.get_states)
-TreeNode.print_solution(goal)
+    def get_path(node):
+        if node:
+            path = []
+            while node:
+                path.append(node)
+                node = node.parent
+            path = reversed(path)
+            return path
+        return None
+    
+"""  
+    def ida_star_search(initial_state, goal_state_func, operators_func, heuristic_func, max_depth):
+        depth = heuristic_func(initial_state)
+        while depth <= max_depth:
+            result = 1
+            if result is not None:
+                return result
+        return None
+"""
+    
+state = GameState(cursor_position,game_board_start,game_board_solution)
 
-print(goal.state)
+goal = TreeNode.a_star_search(state,GameState.goal_state,GameState.get_states,GameState.simple_heuristic)
+
+TreeNode.print_solution(goal)
 
 print("Done")
