@@ -1,5 +1,6 @@
 import pygame
 import random
+import ai
 
 class gameLoop:
     def __init__(self, level, board, remaining_time=0, lives=3):
@@ -195,6 +196,22 @@ class gameLoop:
                 if (not self.moved):
                     pygame.time.set_timer(pygame.USEREVENT, 1000)
                     self.moved = True
+            elif event.key == pygame.K_1:
+                self.ai_move(0)
+            elif event.key == pygame.K_2:
+                self.ai_move(1)
+            elif event.key == pygame.K_3:
+                self.ai_move(2)
+            elif event.key == pygame.K_4:
+                self.ai_move(3)
+            elif event.key == pygame.K_5:
+                self.ai_move(4)
+            elif event.key == pygame.K_6:
+                self.ai_move(5)
+            elif event.key == pygame.K_7:
+                self.ai_move(6)
+            elif event.key == pygame.K_8:
+                self.ai_move(7)
 
         self.draw_aux()
 
@@ -239,6 +256,58 @@ class gameLoop:
 
         pygame.display.flip()
     
-    def ai_move(self, movelist):
-        for move in movelist:
-            self.move_cursor(move)
+    def ai_move(self, algorithm):
+        beep = pygame.mixer.Sound("sounds/beep.mp3")
+        game_state_copy = ai.GameState(self.cursor_position, self.game_board_start, self.game_board_solution)
+        self.draw_aux()
+        self.screen.blit(self.font.render("Solving...", True, (255, 255, 255)), (10, 50))
+        pygame.display.flip()
+        if algorithm == 0:
+            #bfs
+            path = ai.TreeNode.get_path(ai.TreeNode.breadth_first_search(game_state_copy, ai.GameState.goal_state, ai.GameState.get_states))
+        elif algorithm == 1:
+            #dfs
+            path= ai.TreeNode.get_path(ai.TreeNode.depth_first_search(game_state_copy, ai.GameState.goal_state, ai.GameState.get_states))
+        elif algorithm == 2:
+            #simple greedy
+            path = ai.TreeNode.get_path(ai.TreeNode.greedy_search(game_state_copy, ai.GameState.goal_state, ai.GameState.get_states, ai.GameState.simple_heuristic))
+        elif algorithm == 3:
+            #color cluster greedy
+            path = ai.TreeNode.get_path(ai.TreeNode.greedy_search(game_state_copy, ai.GameState.goal_state, ai.GameState.get_states, ai.GameState.color_clusters_heuristic))
+        elif algorithm == 4:
+            #a* simple
+            path = ai.TreeNode.get_path(ai.TreeNode.a_star_search(game_state_copy, ai.GameState.goal_state, ai.GameState.get_states, ai.GameState.simple_heuristic))
+        elif algorithm == 5:
+            #a* color cluster
+            path = ai.TreeNode.get_path(ai.TreeNode.a_star_search(game_state_copy, ai.GameState.goal_state, ai.GameState.get_states, ai.GameState.color_clusters_heuristic))
+        elif algorithm == 6:
+            #depth limited
+            path = ai.TreeNode.get_path(ai.TreeNode.depth_limited_search(game_state_copy, ai.GameState.goal_state, ai.GameState.get_states, 50))
+        elif algorithm == 7:
+            #iterative deepening
+            path = ai.TreeNode.get_path(ai.TreeNode.iterative_deepening_search(game_state_copy, ai.GameState.goal_state, ai.GameState.get_states, 50))
+        pygame.time.set_timer(pygame.USEREVENT+1, 1000)
+        beep.play()
+        while path!=[]:
+            for event in pygame.event.get():
+                if event.type == pygame.USEREVENT+1:
+                    move = path.pop(-1)
+                    self.draw_aux()
+                    if move.state.previous_move == ai.UP:
+                        move = (self.cursor_position[0], self.cursor_position[1]-1)
+                    elif move.state.previous_move == ai.DOWN:
+                        move = (self.cursor_position[0], self.cursor_position[1]+1)
+                    elif move.state.previous_move == ai.LEFT:
+                        move = (self.cursor_position[0]-1, self.cursor_position[1])
+                    elif move.state.previous_move == ai.RIGHT:
+                        move = (self.cursor_position[0]+1, self.cursor_position[1])
+                    else:
+                        break
+                    self.move_cursor(move)
+                    self.move_count += 1
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.USEREVENT+1:
+                    self.draw_aux()
+                    return
+        
