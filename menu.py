@@ -3,7 +3,7 @@ import pygame
 class Menu:
     def __init__(self, screen):
         self.screen = screen
-        self.options = ["Play", "Settings", "Quit"]
+        self.options = ["Play", "Settings", "Tutorial", "Quit"]
         self.selected_option = 0
         self.title = "AMADO"
         self.update_fonts()
