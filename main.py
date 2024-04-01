@@ -3,7 +3,7 @@ from menu import Menu
 from settings import SettingsMenu
 from levelMenu import LevelMenu
 from gameLoop import gameLoop
-from tutorialMenu import tutorialMenu
+from tutorialMenu import TutorialMenu
 
 def main():
     pygame.init()
@@ -11,7 +11,7 @@ def main():
     menu = Menu(screen)
     settingsMenu = SettingsMenu(screen)
     levelMenu = LevelMenu(screen)
-    tutorialMenu = tutorialMenu(screen)
+    tutorialMenu = TutorialMenu(screen)
     current_menu = "main"
     game = None
 
@@ -111,7 +111,7 @@ def main():
             settingsMenu.draw()
         elif current_menu == "levelselection":
             levelMenu.draw()         
-        elif current_menu == "Tutorial":
+        elif current_menu == "tutorial":
             tutorialMenu.draw()
           
         pygame.display.flip()
