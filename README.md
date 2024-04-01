@@ -17,14 +17,14 @@ The game has three different levels. The main distinction between these levels i
 
 You can play the game by yourself if you wish to, or enable the AI with different algorithms (some may take way longer than others, also dependant on level) after pressing these numbers:
 
-0. Breadth-first Search
-1. Depth-first Search
-2. Simple Greedy Search
-3. Color Cluster Greedy Search
-4. A* Simple    
-5. A* Color Cluster
-6. Depth Limited Search
-7. Iterative Deepening
+1. Breadth-first Search
+2. Depth-first Search
+3. Simple Greedy Search
+4. Color Cluster Greedy Search
+5. A* Simple    
+6. A* Color Cluster
+7. Depth Limited Search
+8. Iterative Deepening
 
 The algorithms will think about the best solution to run, without pressing any keys (which means the timer will not start), and when a solution is found it will run that sequence to complete the board.
 
