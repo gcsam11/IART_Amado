@@ -1,10 +1,8 @@
 import pygame
 
-class Menu:
+class tutorialMenu:
     def __init__(self, screen):
         self.screen = screen
-        self.options = ["Play", "Settings", "Tutorial", "Quit"]
-        self.selected_option = 0
         self.title = "AMADO"
         self.update_fonts()
 
@@ -27,15 +25,7 @@ class Menu:
         title_position = ((self.screen.get_width() - title.get_width()) // 2, self.screen.get_height() // 10)  # Position the title at 1/10th of the screen height
         self.screen.blit(title, title_position)
 
-        # Draw the menu options
-        for i, option in enumerate(self.options):
-            if i == self.selected_option:
-                color = (255, 0, 0)  # Red color for selected option
-            else:
-                color = (255, 255, 255)  # White color for other options
-            text = self.option_font.render(option, True, color)
-            text_position = ((self.screen.get_width() - text.get_width()) // 2, self.screen.get_height() // 2 + i * 50)  # Position the options at the center of the screen, with 50 pixels between each option
-            self.screen.blit(text, text_position)
+        # Draw the tutorial keys
 
     def handle_input(self, event):
         if event.type == pygame.KEYDOWN:

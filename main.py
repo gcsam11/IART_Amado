@@ -3,6 +3,7 @@ from menu import Menu
 from settings import SettingsMenu
 from levelMenu import LevelMenu
 from gameLoop import gameLoop
+from tutorialMenu import tutorialMenu
 
 def main():
     pygame.init()
@@ -10,6 +11,7 @@ def main():
     menu = Menu(screen)
     settingsMenu = SettingsMenu(screen)
     levelMenu = LevelMenu(screen)
+    tutorialMenu = tutorialMenu(screen)
     current_menu = "main"
     game = None
 
@@ -38,6 +40,9 @@ def main():
                 elif result == "Settings":
                     current_menu = "settings"
                     break
+                elif result == "Tutorial":
+                    current_menu = "tutorial"
+                    break
                 elif result == "Quit":
                     pygame.quit()
             elif current_menu == "settings":
@@ -51,6 +56,7 @@ def main():
                     menu.update_screen(screen)
                     settingsMenu.update_screen(screen)
                     levelMenu.update_screen(screen)
+                    tutorialMenu.update_screen(screen)
                     if game is not None:
                         game.update_screen(screen)
             elif current_menu == "levelselection":
@@ -61,6 +67,11 @@ def main():
                 elif result != None:
                     current_menu = "gameLoop"
                     game = gameLoop(result+1, 1)  
+                    break
+            elif current_menu == "tutorial":
+                result = tutorialMenu.handle_input(event)
+                if result == "Back":
+                    current_menu = "main"
                     break
             elif current_menu == "gameLoop":
                 if game is not None:
@@ -99,7 +110,9 @@ def main():
         elif current_menu == "settings":
             settingsMenu.draw()
         elif current_menu == "levelselection":
-            levelMenu.draw()          
+            levelMenu.draw()         
+        elif current_menu == "Tutorial":
+            tutorialMenu.draw()
           
         pygame.display.flip()
 
