@@ -4,14 +4,14 @@ class TutorialMenu:
     def __init__(self, screen):
         self.screen = screen
         self.title = "AMADO"
-        self.ai_options = ["0 -> BFS",
-        "1 -> DFS", 
-        "2 -> Simple Greedy", 
-        "3 -> Color Cluster Greedy",
-        "4 -> A* Simple", 
-        "5 -> A* Color Cluster",
-        "6 -> Depth Limited", 
-        "7 -> Iterative Deepening"]
+        self.ai_options = ["1 -> BFS",
+        "2 -> DFS", 
+        "3 -> Simple Greedy", 
+        "4 -> Color Cluster Greedy",
+        "5 -> A* Simple", 
+        "6 -> A* Color Cluster",
+        "7 -> Depth Limited", 
+        "8 -> Iterative Deepening"]
         self.selected_option = 0
         self.update_fonts()
 
