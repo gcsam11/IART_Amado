@@ -20,9 +20,11 @@ def main():
 
     clock = pygame.time.Clock()
 
+    # Game Loop
     while True:
         clock.tick(60)
         events = pygame.event.get()
+        # Event Handler
         for event in events:
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -50,7 +52,8 @@ def main():
                 if result == "Back":
                     current_menu = "main"   
                     break
-                elif result != None:
+                # Change the screen resolution and update all menus
+                elif result != None: 
                     result = result.split("x")
                     screen = pygame.display.set_mode((int(result[0]), int(result[1])), pygame.RESIZABLE)
                     menu.update_screen(screen)
@@ -64,9 +67,10 @@ def main():
                 if result == len(levelMenu.options)-1:
                     current_menu = "main"
                     break
+                # Start the game with the selected level
                 elif result != None:
                     current_menu = "gameLoop"
-                    game = gameLoop(result+1, 1)  
+                    game = gameLoop(result + 1, 1)  
                     break
             elif current_menu == "tutorial":
                 result = tutorialMenu.handle_input(event)
@@ -89,18 +93,18 @@ def main():
                             game = None
                             game = newgame
                             pygame.event.clear()
-                    # Check if the game board and the solution board are equal
+                    # Check if the game board is solved
                     if game.board_is_solved():
                         win.play()
                         pygame.time.delay(4000)
                         if game.board < game.totalBoards:
-                            # There is a next board, load it
+                            # Check if there is a next board, and load it
                             newgame = gameLoop(game.level, game.board + 1, game.timer, game.lives)
                             game = None
                             game = newgame
                             pygame.event.clear()
                         else:
-                            # There is no next board, the game is finished
+                            # Completed all boards
                             print("Game finished!")
                             game = None
                             current_menu = "main"

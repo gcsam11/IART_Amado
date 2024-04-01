@@ -9,10 +9,12 @@ class SettingsMenu:
         self.selected_resolution = f"{self.info.current_w}x{self.info.current_h}"  # Initialize selected_resolution with current resolution
         self.font = pygame.font.Font(None, self.screen.get_height() // 20)
 
+    # Update the screen and adjust the font size accordingly
     def update_screen(self, screen):
         self.screen = screen
         self.font = pygame.font.Font(None, self.screen.get_height() // 20)  # Update the font size based on the new screen size
 
+    # Drawing Settings Menu Function
     def draw(self):
         for i, option in enumerate(self.options):
             if i == self.selected_option:
@@ -25,6 +27,7 @@ class SettingsMenu:
             rect.center = (self.screen.get_width() / 2, 200 + i * 60)
             self.screen.blit(text, rect)
 
+    # Settings Menu Input Handler
     def handle_input(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:

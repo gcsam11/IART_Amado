@@ -18,6 +18,7 @@ move_string = ["START", "UP", "DOWN", "LEFT", "RIGHT"]
 colors = [(255, 255, 0), (0, 0, 255), (255, 0, 0)]
 colors_dic={(255, 255, 0):0, (0, 0, 255):1, (255, 0, 0):2}
 
+# Move the cursor to the next position
 def move_cursor(game_board_start, cursor_position, next_position):
         x,y = cursor_position
         next_x, next_y = next_position
@@ -36,6 +37,7 @@ def move_cursor(game_board_start, cursor_position, next_position):
             game_board_start[next_y][next_x]=final_color
         return True, cursor_position
 
+# Regression algorithm that does more alterations to the board with higher level difficulty
 def regression_algorithm(cursor_position,game_board_start, difficulty):
         if difficulty == 1:
             steps = 5*len(game_board_start)
@@ -69,6 +71,7 @@ def regression_algorithm(cursor_position,game_board_start, difficulty):
         cursor_position = original_cursor
         return game_board_start
 
+# Generate a solution board with random colors based on the board number
 def generate_board(board, cursor_position=(0,0)):
         if board == 1:
             # 4x4 square board
@@ -129,6 +132,7 @@ game_board_start, game_board_solution, cursor_position = generate_board(1)
 
 game_board_start = regression_algorithm(cursor_position,game_board_start, 1)
 
+# Copy the board
 def copy(board):
     new_board = []
     for i in range(len(board)):
@@ -136,6 +140,7 @@ def copy(board):
         new_board.append(temp)
     return new_board
 
+# Convert list to tuple
 def list_to_tuple(l):
     return tuple([tuple(x) for x in l])
 
@@ -147,18 +152,22 @@ class GameState:
         self.goal_board = goal_board
         self.previous_move = previous_move
     
+    # Check if the cursor positions and the boards are equal
     def __eq__(self, other):
         if isinstance(other, self.__class__):
             return other.cursor_position == self.cursor_position and other.board == self.board
         else:
             return False
 
+    # Check if the cursor positions and the boards are not equal
     def __ne__(self, other):
         return not self.__eq__(other)
     
+    # Creates the hash for the game state
     def __hash__(self):
         return hash((self.cursor_position, list_to_tuple(self.board)))
 
+    # Convert the current position and the board to a string
     def __str__(self):
         string = "(" + str(self.cursor_position[0]) + ", " + str(self.cursor_position[1]) + ")\n\n"
 
@@ -174,11 +183,13 @@ class GameState:
     
     ###SMOOTH OPERATORS
 
+    # Check if the position/move is valid
     def valid_move(pos,board):
         if(pos[0] < 0 or pos[0] >= len(board[0]) or pos[1] < 0 or pos[1] >= len(board)):
             return False
         return board[pos[1]][pos[0]] != (0,0,0)
 
+    # Update the color of the position
     def color_update(pos,next_pos,board):
         b = copy(board)
         first_color = board[pos[1]][pos[0]]
@@ -190,6 +201,7 @@ class GameState:
             b[next_pos[1]][next_pos[0]] = colors[remaining_color]
             return b
 
+    # Move the cursor up
     def up(state):
         new_cursor = (state.cursor_position[0],state.cursor_position[1]-1)
         if(not GameState.valid_move(new_cursor,state.board)):
@@ -198,6 +210,7 @@ class GameState:
             new_board = GameState.color_update(state.cursor_position,new_cursor,state.board)
             return GameState(new_cursor,new_board,state.goal_board,UP)
         
+    # Move the cursor down
     def down(state):
         new_cursor = (state.cursor_position[0],state.cursor_position[1]+1)
         if(not GameState.valid_move(new_cursor,state.board)):
@@ -206,6 +219,7 @@ class GameState:
             new_board = GameState.color_update(state.cursor_position,new_cursor,state.board)
             return GameState(new_cursor,new_board,state.goal_board,DOWN)
     
+    # Move the cursor left
     def left(state):
         new_cursor = (state.cursor_position[0]-1,state.cursor_position[1])
         if(not GameState.valid_move(new_cursor,state.board)):
@@ -214,6 +228,7 @@ class GameState:
             new_board = GameState.color_update(state.cursor_position,new_cursor,state.board)
             return GameState(new_cursor,new_board,state.goal_board,LEFT)
     
+    # Move the cursor right
     def right(state):
         new_cursor = (state.cursor_position[0]+1,state.cursor_position[1])
         if(not GameState.valid_move(new_cursor,state.board)):
@@ -221,7 +236,8 @@ class GameState:
         else:
             new_board = GameState.color_update(state.cursor_position,new_cursor,state.board)
             return GameState(new_cursor,new_board,state.goal_board,RIGHT)
-        
+    
+    # Get the possible states from the current one
     def get_states(state):
         new_states = []
         
@@ -243,6 +259,7 @@ class GameState:
         
         return new_states
     
+    # Check if the current state is the goal state
     def goal_state(state):
         res = state.board == state.goal_board
         g = True
@@ -253,6 +270,7 @@ class GameState:
             
         return g
     
+    # Heuristic function to calculate the distance between the current state and the goal state
     def simple_heuristic(state):
         board = state.board
         goal_board = state.goal_board
@@ -264,10 +282,11 @@ class GameState:
                     distance += 1
         return distance
     
+    # Heuristic function to calculate the distance between the current state and the goal state
     def color_clusters_heuristic(state):
         board = state.board
         goal = state.goal_board
-    # Helper function to find connected components (clusters) using DFS
+        # Helper function to find connected components (clusters) using DFS
         def dfs(x, y, color):
             if not (0 <= x < 4 and 0 <= y < 4) or visited[x][y] or board[x][y] != color:
                 return
@@ -309,11 +328,13 @@ class TreeNode:
         else:
             self.depth = self.parent.depth +1
 
+    # Add a child to the current node
     def add_child(self, child_node):
         self.children.append(child_node)
         child_node.parent = self
         child_node.depth = self.depth + 1
 
+    # Breadth-first Search Algorithm
     def breadth_first_search(initial_state, goal_state_func, operators_func):
         root = TreeNode(initial_state)   # create the root node in the search tree
         queue = deque([root])   # initialize the queue to store the nodes
@@ -329,10 +350,9 @@ class TreeNode:
                     node.add_child(new_node)
                     queue.append(new_node)
             
-            
-
         return None
     
+    # Depth-first Search Algorithm
     def depth_first_search(initial_state, goal_state_func, operators_func):
         root = TreeNode(initial_state)
         stack = [root]
@@ -352,15 +372,16 @@ class TreeNode:
     
         return None
     
+    # Greedy Search Algorithm
     def greedy_search(initial_state, goal_state_func, operators_func, heuristic_func):
         root = TreeNode(initial_state)
-        open_list = [root]
-        closed_list = []
+        open_list = [root] # List of nodes to be visited
+        closed_list = [] # List of visited nodes
 
-        while open_list:
-            open_list.sort(key=lambda x: heuristic_func(x.state))
+        while open_list: 
+            open_list.sort(key=lambda x: heuristic_func(x.state)) # Sort the open list based on the heuristic function
             node = open_list.pop(0)
-            closed_list.append(node)
+            closed_list.append(node) # Add the current node to the visited list
             if goal_state_func(node.state):
                 return node
             else:
@@ -376,15 +397,16 @@ class TreeNode:
     
         return None
     
+    # A* Search Algorithm
     def a_star_search(initial_state, goal_state_func, operators_func, heuristic_func):
         root = TreeNode(initial_state)
-        open_list = [root]
-        closed_list = []
+        open_list = [root] # List of nodes to be visited
+        closed_list = [] # List of visited nodes
 
         while open_list:
-            open_list.sort(key=lambda x: heuristic_func(x.state) + x.depth)
+            open_list.sort(key=lambda x: heuristic_func(x.state) + x.depth) # Sort the open list based on the heuristic function and the depth of the node
             node = open_list.pop(0)
-            closed_list.append(node)
+            closed_list.append(node) # Add the current node to the visited list
             if goal_state_func(node.state):
                 return node
             else:
@@ -401,8 +423,8 @@ class TreeNode:
     
         return None
     
+    # Depth-limited Search Algorithm
     def depth_limited_search(initial_state, goal_state_func, operators_func, depth_limit):
-        # your code here
         root = TreeNode(initial_state)
         visited = set ([initial_state])
 
@@ -427,30 +449,30 @@ class TreeNode:
     
         return sub_dfs(root,0)
 
+    # Iterative Deepening Search Algorithm
     def iterative_deepening_search(initial_state, goal_state_func, operators_func, max_depth):
-        # your code here
         for depth in range(max_depth):
             print(depth)
-            result = TreeNode.depth_limited_search(initial_state,goal_state_func,operators_func,depth)
+            result = TreeNode.depth_limited_search(initial_state,goal_state_func,operators_func,depth) # Call depth limited search, increasing depth each time
             if result is not None:
                 return result
         
         return None
     
     def sub_depth_limited_search(node, goal_state_func, operators_func, depth_limit):
-        if goal_state_func(node.state):
+        if goal_state_func(node.state): # Check if the current node is the goal state
             return node
-        if node.depth == depth_limit:
+        if node.depth == depth_limit: # Check if the current node is at the depth limit of the search
             return None
         for state in operators_func(node.state):
-            child_node = TreeNode(state=state, parent=node)
-            result = TreeNode.sub_depth_limited_search(child_node, goal_state_func, operators_func, depth_limit)
+            child_node = TreeNode(state=state, parent=node) # Create a child node from the current node
+            result = TreeNode.sub_depth_limited_search(child_node, goal_state_func, operators_func, depth_limit) # Recursively call the function on the child node
             if result is not None:
                 return result
         return None
 
+    # Print the solution
     def print_solution(node):
-        # your code here
         if node:
             path = []
             while node:
@@ -463,6 +485,7 @@ class TreeNode:
                 
         return
     
+    # Get the path
     def get_path(node):
         if node:
             path = []
@@ -481,11 +504,3 @@ class TreeNode:
                 return result
         return None
 """
-    
-#state = GameState(cursor_position,game_board_start,game_board_solution)
-
-#goal = TreeNode.a_star_search(state,GameState.goal_state,GameState.get_states,GameState.simple_heuristic)
-
-#TreeNode.print_solution(goal)
-
-#print("Done")

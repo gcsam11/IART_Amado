@@ -23,6 +23,7 @@ class gameLoop:
         self.lives = lives
         self.running = True
     
+    # Regression algorithm that does more alterations to the board with higher level difficulty
     def regression_algorithm(self, difficulty):
         if difficulty == 1:
             steps = 5*len(self.game_board_start)
@@ -51,9 +52,11 @@ class gameLoop:
                     steps+=1
         self.cursor_position = original_cursor
 
+    # Update the screen
     def update_screen(self, screen):
         self.screen = screen
 
+    # Generate a solution board with random colors based on the board number
     def generate_board(self, board):
         if board == 1:
             # 4x4 square board
@@ -110,10 +113,12 @@ class gameLoop:
             game_board_start.append(list.copy())
         return game_board_start, game_board_solution
 
+    # Load a level by calling the generating boards function
     def load_level(self, board):
         game_board_start, game_board_solution = self.generate_board(board)
         return game_board_start, game_board_solution
 
+    # Draw the game boards
     def draw_board(self, game_board, position, square_size):
         x, y = position
         offset = 10
@@ -123,12 +128,14 @@ class gameLoop:
                     pygame.draw.rect(self.screen, (255,255,255), pygame.Rect(x + j * square_size + offset*j - 7.5, y + i * square_size + offset*i - 7.5, square_size+15, square_size+15))
                 pygame.draw.rect(self.screen, color, pygame.Rect(offset*j + x + j * square_size, offset*i + y + i * square_size, square_size, square_size))
 
+    # Check if the position in the board is valid
     def is_valid_position(self, position):
         x, y = position
         if x < 0 or x >= len(self.game_board_start[0]) or y < 0 or y >= len(self.game_board_start) or self.game_board_start[y][x] == (0,0,0):
             return False
         return True
     
+    # Move the cursor to the next position
     def move_cursor(self, next_position):
         x,y = self.cursor_position
         next_x, next_y = next_position
@@ -144,9 +151,11 @@ class gameLoop:
             self.game_board_start[next_y][next_x]=final_color
         return True
     
+    # Check if the board is solved
     def board_is_solved(self):
         return self.game_board_start == self.game_board_solution
 
+    # Update the game state
     def update(self, event):
         if event.type == pygame.USEREVENT:
             if self.moved == True:
@@ -219,6 +228,7 @@ class gameLoop:
             return False
         return True
     
+    # Draw other auxilary elements of the game
     def draw_aux(self):
         # Update the game state here
         display_info = pygame.display.Info()
@@ -256,6 +266,7 @@ class gameLoop:
 
         pygame.display.flip()
     
+    # AI move function that solves the board with multiple algorithm options
     def ai_move(self, algorithm):
         beep = pygame.mixer.Sound("sounds/beep.mp3")
         game_state_copy = ai.GameState(self.cursor_position, self.game_board_start, self.game_board_solution)

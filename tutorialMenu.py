@@ -15,10 +15,12 @@ class TutorialMenu:
         self.selected_option = 0
         self.update_fonts()
 
+    # Update the screen and adjust the font sizes accordingly
     def update_screen(self, screen):
         self.screen = screen
         self.update_fonts()
 
+    # Adjust the font size based on the screen size
     def update_fonts(self):
         # Adjust the font size based on the screen size
         title_font_size = self.screen.get_height() // 10
@@ -27,6 +29,7 @@ class TutorialMenu:
         self.title_font = pygame.font.Font(None, title_font_size)
         self.option_font = pygame.font.Font(None, option_font_size)
 
+    # Draw the tutorial menu
     def draw(self):
         self.screen.fill((0, 0, 0))  # Fill the screen with black color
 
@@ -56,6 +59,7 @@ class TutorialMenu:
 
         pygame.display.flip()
 
+    # Tutorial Menu Input Handler
     def handle_input(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
